@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import User from "../models/User.js"
 import bcrypt from "bcryptjs";
 import { createError } from "../error.js";
+import jwt from "jsonwebtoken";
 
 export const signup = async (req, res, next)=>{
     try{
@@ -30,6 +31,14 @@ export const signin = async (req, res, next)=>{
         //check if password is valid with hashed password
         const isCorrect = await bcrypt.compare(req.body.password, user.password);
         if(!isCorrect) return next(createError(404, "Invalid Credentials!"));
+
+        //hashed access token via cookies
+        const token = jwt.sign({id:user._id}, process.env.JWT);
+        const {password, ...others} = user._doc; //remove hashed password from return information
+
+        res.cookie("access_token", token, {
+            httpOnly:true
+        }).status(200).json(others);
 
     }catch(err){
         next(err)
