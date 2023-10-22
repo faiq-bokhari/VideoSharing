@@ -13,7 +13,7 @@ const VideoSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    imgUrL:{
+    imgUrl:{
         type: String,
         required: true,
     },
